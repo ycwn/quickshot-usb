@@ -1,0 +1,13 @@
+
+
+core_$(CORE_HAS_CCPWM)    += timing/ccpwm.c
+core_$(CORE_HAS_ECCPWM)   += timing/eccpwm.c
+core_$(CORE_HAS_MOTIONFB) += timing/motion.c
+core_$(CORE_HAS_PCPWM)    += timing/pcpwm.c
+core_$(CORE_HAS_MOTIONFB) += timing/qei.c
+core_$(CORE_HAS_TIMER0)   += timing/timer0.c
+core_$(CORE_HAS_TIMER1)   += timing/timer1.c
+core_$(CORE_HAS_TIMER2)   += timing/timer2.c
+core_$(CORE_HAS_TIMER3)   += timing/timer3.c
+core_$(CORE_HAS_TIMER5)   += timing/timer5.c
+

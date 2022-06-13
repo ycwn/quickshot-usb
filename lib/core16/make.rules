@@ -1,0 +1,89 @@
+
+
+core_dir := $(dir $(abspath $(lastword  $(MAKEFILE_LIST))))
+proj_dir := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+
+source  = src
+build   = build
+corelib = core16.lib
+rules   = $(shell find $(core_dir) -name 'build.rules')
+
+boot     =
+core     =
+core_no  =
+core_yes =
+
+include $(core_dir)/device/tool-$(toolchain).rules
+include $(core_dir)/device/chip-$(device).rules
+include $(rules)
+include $(proj_dir)/config.rules
+
+config := $(sort $(foreach config, $(filter CONFIG_%, $(.VARIABLES)), $(if $(filter-out no, $(value $(config))), -D$(config)=$(value $(config)),)))
+
+cflags  += $(config)
+ldflags +=
+asflags += $(config)
+
+core_src := $(sort $(core) $(core_yes))
+auto_src := $(patsubst %.in, $(build)/auto/%, $(filter %.in, $(core)))
+app_src  := $(shell find $(source) -name '*.c' -o -name '*.asm')
+
+core_obj :=\
+	$(patsubst %.c,   $(build)/core/%.o, $(filter %.c,   $(core_src))) \
+	$(patsubst %.asm, $(build)/core/%.o, $(filter %.asm, $(core_src)))
+
+auto_obj :=\
+	$(patsubst %.c,   %.o, $(filter %.c,   $(auto_src))) \
+	$(patsubst %.asm, %.o, $(filter %.asm, $(auto_src)))
+
+app_obj :=\
+	$(patsubst %.asm, $(build)/core/%.o, $(filter %.asm, $(boot))) \
+	$(patsubst $(source)/%.c,   $(build)/%.o, $(filter %.c,   $(app_src))) \
+	$(patsubst $(source)/%.asm, $(build)/%.o, $(filter %.asm, $(app_src)))
+
+
+.PHONY: all clean tarball autogen upload $(build)
+.SUFFIXES:
+
+
+all: $(build) autogen $(build)/$(project).hex
+
+clean:
+	rm -rf $(build)
+
+tarball: clean
+	cd .. && tar jcvf `date +$(project)-%y.%m.%d.tar.bz2` `basename $(CURDIR)`/
+
+autogen: $(auto_src)
+
+upload: $(build)/$(project).hex
+	$(pg) $(pgflags) -f $<
+
+
+$(build):
+	mkdir -p $(sort $(dir $(core_obj) $(auto_src) $(app_obj)))
+
+
+$(build)/$(project).hex: $(app_obj) $(build)/$(corelib)
+	$(ld) $(ldflags) $^ $(libs) -o $@
+
+$(build)/$(corelib): $(core_obj) $(auto_obj)
+	$(lb) -c $@ $^
+
+
+$(build)/core/%.o: $(core_dir)/%.c;     $(cc) $(cflags) -c $< -o $@
+$(build)/auto/%.o: $(build)/auto/%.c;   $(cc) $(cflags) -c $< -o $@
+$(build)/%.o:      $(source)/%.c;       $(cc) $(cflags) -c $< -o $@
+
+$(build)/core/%.o: $(core_dir)/%.asm;   $(as) $(asflags) -c $< -o $@
+$(build)/auto/%.o: $(build)/auto/%.asm; $(as) $(asflags) -c $< -o $@
+$(build)/%.o:      $(source)/%.asm;     $(as) $(asflags) -c $< -o $@
+
+
+$(build)/automage.cache: $(filter %.c, $(core_src:%=$(core_dir)/%) $(app_src))
+	@echo Generating $@...
+	$(core_dir)/automage.pl --cache $(build)/automage.cache --generate --processor="$(cp) $(cflags)" $^
+
+$(build)/auto/%: $(core_dir)/%.in $(build)/automage.cache
+	$(core_dir)/automage.pl --cache $(build)/automage.cache $< $@
+

@@ -1,0 +1,36 @@
+
+
+cflags  += -mpic16 -pp18f4620
+asflags += -p18f4620
+ldflags +=
+pgflags += -ppic18f4620
+libs    += pic18f4620.lib
+
+
+CORE_HAS_PORTA    = yes
+CORE_HAS_PORTB    = yes
+CORE_HAS_PORTC    = yes
+CORE_HAS_PORTD    = yes
+CORE_HAS_PORTE    = yes
+CORE_HAS_TIMER0   = yes
+CORE_HAS_TIMER1   = yes
+CORE_HAS_TIMER2   = yes
+CORE_HAS_TIMER3   = yes
+CORE_HAS_TIMER4   = no
+CORE_HAS_TIMER5   = no
+CORE_HAS_CCPWM    = yes
+CORE_HAS_ECPPWM   = no
+CORE_HAS_MOTIONFB = no
+CORE_HAS_PCPWM    = no
+CORE_HAS_USB      = no
+CORE_HAS_PARPORT  = yes
+CORE_HAS_SSPSPI   = yes
+CORE_HAS_SSPI2C   = yes
+CORE_HAS_EUSART   = yes
+CORE_HAS_ADC10    = yes
+CORE_HAS_ADC12    = no
+CORE_HAS_COMP     = yes
+CORE_HAS_VREF     = yes
+CORE_HAS_LVD      = yes
+CORE_HAS_HVD      = yes
+

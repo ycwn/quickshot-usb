@@ -1,0 +1,9 @@
+
+
+core += net/icmp.c
+core += net/ip.c
+core += net/net.c.in
+core += net/slip.c
+core += net/tcp.c
+core += net/udp.c
+

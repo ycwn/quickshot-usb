@@ -1,0 +1,141 @@
+
+
+#include <p18cxxx.inc>
+
+
+	radix dec
+
+	code
+
+	global __core_reset
+	global __core_vector_hi
+	global __core_vector_lo
+
+
+#summon constructor
+	extern _@magic[1]
+#done
+
+
+#summon thread
+	extern _@magic[1]
+#done
+
+
+#summon vector
+	extern _@magic[1]
+#done
+
+
+#summon signal
+
+#ifndef _@magic[1]
+	extern _@magic[1]
+#endif
+
+	extern _@magic[4]
+
+#done
+
+
+#summon thunk_connect
+
+#ifdef    __thunk_@magic[1]_slot
+#undefine __thunk_@magic[1]_slot
+#endif
+#define __thunk_@magic[1]_slot _@magic[2]
+
+	extern _@magic[2]
+
+#done
+
+
+
+;
+; Reset vector:
+;    Initialize the core
+;    Call all constructors
+;    Iterate through threads (coop multitasking)
+;    Flush signals
+;
+__core_reset:
+
+#summon constructor, order(0)
+	call _@magic[1]
+#done
+
+__core_loop:
+
+;
+; Call threads
+;
+#summon thread, order(0)
+	call _@magic[1]
+#done
+
+;
+; Call all signal handlers
+;
+#summon signal
+	banksel _@magic[1] + @magic[2]
+	btfsc   _@magic[1] + @magic[2], @magic[3]
+	call    _@magic[4]
+#done
+
+;
+; Reset signal flags
+;
+#summon signal
+	clrf _@magic[1] + @magic[2]
+#done
+
+	goto __core_loop
+
+
+
+;
+; High priority interrupt vector.
+; Invoke vector handlers
+;
+__core_vector_hi:
+
+#summon vector, order(0)
+	btfsc  @magic[2], @magic[3]
+	call  _@magic[1]
+#done
+
+	retfie FAST
+
+
+
+;
+; Low priority interrupt vector.
+; Do nothing at the moment.
+;
+__core_vector_lo:
+
+	retfie
+
+
+
+;
+; Connect the thunks
+;
+#summon thunk_alloc
+
+	global __thunk_@magic[0]
+
+__thunk_@magic[0]:
+
+#ifdef __thunk_@magic[0]_slot
+	goto __thunk_@magic[0]_slot
+#else
+	return
+#endif
+
+#done
+
+
+
+	end
+

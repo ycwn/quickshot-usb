@@ -1,0 +1,5 @@
+
+
+boot += core/boot.asm
+core += core/core.asm.in
+core += core/delay.asm

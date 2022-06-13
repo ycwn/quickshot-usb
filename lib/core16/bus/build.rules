@@ -1,0 +1,6 @@
+
+
+core_$(CORE_HAS_SSPSPI) += bus/spi.c
+core_$(CORE_HAS_SSPI2C) += bus/i2c.c
+core_$(CORE_HAS_EUSART) += bus/uart.c
+

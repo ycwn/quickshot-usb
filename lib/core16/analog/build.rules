@@ -1,0 +1,10 @@
+
+
+core += analog/analog.c
+
+core_$(CORE_HAS_ADC10) += analog/adc.c
+core_$(CORE_HAS_ADC12) += analog/adc.c
+core_$(CORE_HAS_COMP)  += analog/comparator.c
+core_$(CORE_HAS_LVD)   += analog/hlvd.c
+core_$(CORE_HAS_HVD)   += analog/hlvd.c
+core_$(CORE_HAS_VREF)  += analog/vref.c
