@@ -8,6 +8,9 @@
 #include "usb/usb_ep0.h"
 
 
+USB_MODULE
+
+
 char                  usb_device_status;
 usb_endpoint_transfer usb_transfer;
 
@@ -35,6 +38,7 @@ void usb_mode(byte mode)
 		UIE  = 0x7f;
 		UEIE = 0x9f;
 
+		IPR2bits.USBIP = 1;
 		PIR2bits.USBIF = 0;
 		PIE2bits.USBIE = 1;
 
