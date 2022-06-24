@@ -12,5 +12,5 @@ cflags  += -I$(CURDIR) -I$(core_dir)
 asflags +=
 ldflags += $(patsubst %,-I%,$(shell sdcc $(cflags) --print-search-dirs | awk 'dir; /:/{dir=0} /libdir:/{dir=1}'))
 pgflags += -m -y
-libs    +=
+libs    += crt0.o libsdcc.lib
 

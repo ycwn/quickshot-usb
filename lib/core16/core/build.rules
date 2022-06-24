@@ -1,5 +1,4 @@
 
 
-boot += core/boot.asm
-core += core/core.asm.in
+core += core/core.c
 core += core/delay.asm

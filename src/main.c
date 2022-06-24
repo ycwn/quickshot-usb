@@ -37,12 +37,8 @@ USB_STRING_TABLE(
 );
 
 
-_constructor(100, app_main)
-_thread(0, app)
 
-
-
-void app_main()
+void setup()
 {
 
 
@@ -59,7 +55,7 @@ void app_main()
 
 
 
-void app()
+void loop()
 {
 
 //	word n;
