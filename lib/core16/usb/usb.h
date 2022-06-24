@@ -5,7 +5,7 @@
 
 
 #define USB_BUFFER_SIZE       64
-#define USB_ENDPOINTS          1
+#define USB_ENDPOINTS          2
 #define USB_VECTOR_PRIORITY  100
 
 
@@ -23,11 +23,11 @@
 #define USB_ENDPOINT_CONFIG(ep, flags)					\
 	{								\
 		usb.endpoint[(ep)].out.count  = USB_BUFFER_SIZE;	\
-		usb.endpoint[(ep)].out.buffer = usb.buffer[0].out;	\
+		usb.endpoint[(ep)].out.buffer = (word)&usb.buffer[(ep)].out[0];	\
 		usb.endpoint[(ep)].out.status = 0x80;			\
 		usb.endpoint[(ep)].in.count   = 0;			\
-		usb.endpoint[(ep)].in.buffer  = usb.buffer[0].in;	\
-		usb.endpoint[(ep)].in.status  = 0x00;			\
+		usb.endpoint[(ep)].in.buffer  = (word)&usb.buffer[(ep)].in[0];	\
+		usb.endpoint[(ep)].in.status  = 0x80;			\
 		UEP##ep = (flags);					\
 	}
 
@@ -162,8 +162,7 @@ typedef struct {
 
 	byte status;
 	byte count;
-
-	data byte *buffer;
+	word buffer;
 
 } usb_buffer_descriptor;
 
@@ -178,8 +177,8 @@ typedef struct {
 
 	union {
 
-		code byte *rom;
-		data byte *ram;
+		const code byte *rom;
+		const data byte *ram;
 
 	} source;
 
@@ -205,13 +204,15 @@ typedef struct {
 } usb_memory_space;
 
 
+
 extern char                  usb_device_status;
 extern usb_endpoint_transfer usb_transfer;
 
 extern volatile usb_memory_space __at(0x0400) usb;
 
 
-void usb_mode(byte mode);
+void usb_mode(int mode); //FIXME: Add flags to enable speed control, interrupts and ping-pong buffering
+void usb_process();      //Might be called from interrupts, or polled in a loop
 
 void usb_handle_generic();
 void usb_handle_error();
@@ -221,15 +222,16 @@ void usb_handle_active();
 void usb_handle_stall();
 void usb_handle_reset();
 void usb_handle_transfer();
+void usb_handle_configure(byte config);
 
-void usb_finalize_setup_transfer();
-void usb_finalize_in_transfer();
-void usb_finalize_out_transfer();
+void usb_finalize_setup_transfer(byte ep);
+void usb_finalize_in_transfer(byte ep);
+void usb_finalize_out_transfer(byte ep);
 
 void usb_transfer_acknowledge();
-void usb_transfer_in_code(code byte *buffer, word length);
-void usb_transfer_in_data(data byte *buffer, word length);
-void usb_transfer_out(data byte *buffer, word length);
+void usb_transfer_in_code(const code byte *buffer, word length);
+void usb_transfer_in_data(const data byte *buffer, word length);
+void usb_transfer_out(const data byte *buffer, word length);
 
 #define usb_get_status()               (usb_device_status)
 #define usb_set_status(value)          usb_device_status = (value)

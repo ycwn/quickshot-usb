@@ -18,7 +18,7 @@
 
 
 #define USB_HID(reports) \
-	6 + 3 * (reports), 0x21, 0x00, 0x01, 0x00, (reports)
+	6 + 3 * (reports), 0x21, 0x11, 0x01, 0x00, (reports)
 
 
 #define USB_HID_REPORT(report) \
