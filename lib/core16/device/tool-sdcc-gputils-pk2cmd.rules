@@ -8,9 +8,21 @@ lb = gplib
 ld = gplink
 pg = pk2cmd
 
-cflags  += -I$(CURDIR) -I$(core_dir)
+cflags  += -I$(CURDIR) -I$(core_dir) --optimize-df --optimize-cmp --optimize-goto --denable-peeps
 asflags +=
 ldflags += $(patsubst %,-I%,$(shell sdcc $(cflags) --print-search-dirs | awk 'dir; /:/{dir=0} /libdir:/{dir=1}'))
 pgflags += -m -y
-libs    += crt0.o libsdcc.lib
+libs    += crt0.o libsdcc.lib libc18f.lib
 
+
+
+erase:
+	$(pg) $(filter -ppic%,$(pgflags)) -e
+
+
+pwron:
+	$(pg) $(filter -ppic%,$(pgflags)) -t
+
+
+pwroff:
+	$(pg) $(filter -ppic%,$(pgflags))
