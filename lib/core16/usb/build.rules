@@ -1,6 +1,6 @@
 
 
-core_$(CORE_HAS_USB) += usb/usb.c
-core_$(CORE_HAS_USB) += usb/usb_ep0.c
-core_$(CORE_HAS_USB) += usb/usb_ep1.c
-
+core_$(CORE_HAS_USB) += usb/usb_core.c
+core_$(CORE_HAS_USB) += usb/usb_aperture.c
+core_$(CORE_HAS_USB) += usb/usb_endpoint.c
+core_$(CORE_HAS_USB) += usb/usb_transfer.c
