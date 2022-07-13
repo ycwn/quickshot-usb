@@ -5,7 +5,7 @@
 
 
 #define USB_BUFFER_SIZE      64
-#define USB_ENDPOINTS         2
+#define USB_ENDPOINTS         4
 #define USB_APERTURE_SIZE   512
 
 typedef int (usb_ep_config_t)(byte ep, byte cfg);

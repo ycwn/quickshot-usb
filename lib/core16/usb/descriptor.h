@@ -12,9 +12,7 @@ enum {
 	USB_DESCRIPTOR_INTERFACE        = 0x04,
 	USB_DESCRIPTOR_ENDPOINT         = 0x05,
 	USB_DESCRIPTOR_DEVICE_QUALIFIER = 0x06,
-	USB_DESCRIPTOR_OTHER_SPEED      = 0x07,
-	USB_DESCRIPTOR_INTERFACE_POWER  = 0x08,
-	USB_DESCRIPTOR_OTG              = 0x09
+	USB_DESCRIPTOR_OTHER_SPEED      = 0x07
 
 };
 
@@ -34,10 +32,18 @@ enum {
 
 };
 
+
 enum {
 
 	USB_PROTOCOL_NONE   = 0x00,
 	USB_PROTOCOL_VENDOR = 0xff
+
+};
+
+
+enum {
+
+	USB_VERSION = 0x0200
 
 };
 
@@ -232,7 +238,7 @@ enum {
 	USB_DESCRIPTOR_BEGIN(byte, USB_DESCRIPTOR_DEVICE, 0)                                       \
 		18,                                                                                \
 		USB_DESCRIPTOR_DEVICE,                                                             \
-		0x00, 0x02,                                                                        \
+		BYTE(USB_VERSION, 0), BYTE(USB_VERSION, 1),                                        \
 		0x00, 0x00, 0x00,                                                                  \
 		USB_BUFFER_SIZE,                                                                   \
 		BYTE(vendor,  0), BYTE(vendor,  1),                                                \
@@ -296,10 +302,31 @@ enum {
 	(interval)
 
 
-//FIXME: Implement DeviceQualifier descriptor
-//FIXME: Implement OtherSpeed descriptor
-//FIXME: Implement Power descriptor
-//FIXME: Implement OTG descriptor
+#define USB_DEVICE_QUALIFIER(configurations)                            \
+	USB_DESCRIPTOR_BEGIN(byte, USB_DESCRIPTOR_DEVICE_QUALIFIER, 0)  \
+		10,                                                     \
+		USB_DESCRIPTOR_DEVICE_QUALIFIER,                        \
+		BYTE(USB_VERSION, 0), BYTE(USB_VERSION, 1),             \
+		0x00, 0x00, 0x00,                                       \
+		USB_BUFFER_SIZE,                                        \
+		(configurations),                                       \
+		0x00                                                    \
+	USB_DESCRIPTOR_END
+
+
+#define USB_OTHER_SPEED(config_no, config_id, interfaces, config_str, attributes, power, config...)  \
+	USB_DESCRIPTOR_BEGIN(byte, USB_DESCRIPTOR_OTHER_SPEED, config_no)                            \
+		9,                                                                                   \
+		USB_DESCRIPTOR_OTHER_SPEED,                                                          \
+		BYTE(9 + PP_NARG(config), 0),                                                        \
+		BYTE(9 + PP_NARG(config), 1),                                                        \
+		(interfaces),                                                                        \
+		(config_id),                                                                         \
+		(config_str),                                                                        \
+		(attributes),                                                                        \
+		(power),                                                                             \
+		config                                                                               \
+	USB_DESCRIPTOR_END
 
 
 #endif
