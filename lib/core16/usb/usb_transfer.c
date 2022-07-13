@@ -198,8 +198,8 @@ void usb_transfer_setup()
 
 	int ret;
 
-	curr_xf->ipolarity = POLARITY_DATA0;
-	curr_xf->opolarity = POLARITY_DATA0;
+	curr_xf->ipolarity = POLARITY_DATA1;
+	curr_xf->opolarity = POLARITY_DATA1;
 	curr_xf->polarity  = POLARITY_DATA1;
 
 	ret = usb_endpoint_setup(curr_ep, curr_buf, curr_len);
@@ -222,6 +222,10 @@ void usb_transfer_send()
 	curr_xf->ipolarity ^= 1;
 	curr_xf->polarity   = curr_xf->ipolarity;
 
+	// A transfer is already in progress
+	if (curr_xf->status != TRANSFER_IDLE)
+		return;
+
 	ret = usb_endpoint_in(curr_ep, curr_buf, curr_len);
 
 	if (ret < 0)
@@ -237,7 +241,11 @@ void usb_transfer_recv()
 	int ret;
 
 	curr_xf->opolarity ^= 1;
-	curr_xf->polarity = curr_xf->opolarity;
+	curr_xf->polarity   = curr_xf->opolarity;
+
+	// A transfer is already in progress
+	if (curr_xf->status != TRANSFER_IDLE)
+		return;
 
 	ret = usb_endpoint_out(curr_ep, curr_buf, curr_len);
 
@@ -380,11 +388,17 @@ void transfer_prefetch()
 
 	const word size = minu16(curr_xf->length, curr_xf->capacity);
 
-	if (curr_xf->status == TRANSFER_CODE)
-		memcpypgm2ram((data byte*)curr_bd->in.buffer, curr_xf->source.rom, size);
+	if (curr_xf->status == TRANSFER_CODE) {
 
-	else
+		memcpypgm2ram((data byte*)curr_bd->in.buffer, curr_xf->source.rom, size);
+		curr_xf->source.rom += size;
+
+	} else {
+
 		memcpyram2ram((data byte*)curr_bd->in.buffer, curr_xf->source.ram, size);
+		curr_xf->source.ram += size;
+
+	}
 
 	transfer_commit(size);
 
