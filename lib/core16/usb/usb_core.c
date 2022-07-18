@@ -136,7 +136,7 @@ void usb_process()
 	}
 
 
-	if (UIRbits.TRNIF) { // Transfer requested
+	while (UIRbits.TRNIF) { // Transfer requested
 
 		const byte token = usb_transfer_begin();
 
