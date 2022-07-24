@@ -43,14 +43,23 @@ enum {
 
 };
 
+enum {
 
-void adc_mode(word mode, byte channels);
-word adc_read(byte ch);
+	ADC_SELECTED_PIN = 0xffff
 
-void adc_select(byte ch);
+};
+
+
+void adc_mode(u16 mode);
+u16  adc_read(u16 chpin);
+
+void adc_set_analog(u16 pin, bool value);
+bool adc_get_analog(u16 pin);
+
+void adc_select(u16 chpin);
 void adc_start();
-byte adc_ready();
-word adc_sample();
+bool adc_ready();
+u16  adc_sample();
 
 
 #endif
