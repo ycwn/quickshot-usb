@@ -6,9 +6,14 @@
 extern void setup();
 extern void loop();
 
-
 static isr_callback_t isr_hi;
 static isr_callback_t isr_lo;
+
+
+//
+// Make sure the configuration is linked
+//
+extern volatile u8 config[];
 
 
 

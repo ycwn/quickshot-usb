@@ -2,7 +2,7 @@
 
 cc = sdcc
 cp = sdcc -E
-as = gpasm
+as = gpasm -e ON
 ap = sdcc -E
 lb = gplib
 ld = gplink

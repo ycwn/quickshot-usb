@@ -1,5 +1,6 @@
 
 
+core += core/config.asm
 core += core/core.c
 core += core/delay.asm
 core += core/gpio.c

@@ -18,7 +18,9 @@ include $(core_dir)/device/chip-$(device).rules
 include $(rules)
 include $(proj_dir)/config.rules
 
-config := $(sort $(foreach config, $(filter CONFIG_%, $(.VARIABLES)), $(if $(filter-out no, $(value $(config))), -D$(config)=$(value $(config)),)))
+
+config := $(sort $(foreach config, $(filter CONFIG_%, $(.VARIABLES)), $(if $(filter-out n, $(value $(config))), -D$(config)=$(value $(config)),)))
+
 
 cflags  += $(config)
 ldflags +=
