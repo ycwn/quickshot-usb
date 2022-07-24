@@ -13,6 +13,7 @@ parserArgumentsOpenCL=-ferror-limit=100 -fspell-checking -Wdocumentation -Wunuse
 Name=GCC
 
 [CustomDefinesAndIncludes][ProjectPath0][Defines]
+CONFIG_JOYSTICK_SVI102=1
 __at(x)=
 __sfr=unsigned char
 code=

@@ -1,0 +1,291 @@
+
+
+#include "core/algorithm.h"
+#include "core/core.h"
+#include "core/gpio.h"
+
+#include "analog/adc.h"
+
+#include "joystick.h"
+
+
+enum {
+
+	DIGITIZE_SMOOTH_SAMPLES   = 64,
+	DIGITIZE_SMOOTH_THRESHOLD = 48,
+
+	DIGITIZE_DEBOUNCE_SAMPLES   = 64,
+	DIGITIZE_DEBOUNCE_THRESHOLD = 48,
+
+	DIGITIZE_LEFT   = 0,
+	DIGITIZE_CENTER = 32767,
+	DIGITIZE_RIGHT  = 65535
+
+};
+
+
+enum {
+
+	BUTTON0_GPIO  = JOYSTICK_GET_BUTTON(0),
+	BUTTON1_GPIO  = JOYSTICK_GET_BUTTON(1),
+	BUTTON2_GPIO  = JOYSTICK_GET_BUTTON(2),
+	BUTTON3_GPIO  = JOYSTICK_GET_BUTTON(3),
+	BUTTON4_GPIO  = JOYSTICK_GET_BUTTON(4),
+	BUTTON5_GPIO  = JOYSTICK_GET_BUTTON(5),
+	BUTTON6_GPIO  = JOYSTICK_GET_BUTTON(6),
+	BUTTON7_GPIO  = JOYSTICK_GET_BUTTON(7),
+	BUTTON8_GPIO  = JOYSTICK_GET_BUTTON(8),
+	BUTTON9_GPIO  = JOYSTICK_GET_BUTTON(9),
+	BUTTON10_GPIO = JOYSTICK_GET_BUTTON(10),
+	BUTTON11_GPIO = JOYSTICK_GET_BUTTON(11),
+	BUTTON12_GPIO = JOYSTICK_GET_BUTTON(12),
+	BUTTON13_GPIO = JOYSTICK_GET_BUTTON(13),
+	BUTTON14_GPIO = JOYSTICK_GET_BUTTON(14),
+	BUTTON15_GPIO = JOYSTICK_GET_BUTTON(15),
+
+	AXIS_X_GPIO0  = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_X),
+	AXIS_X_GPIO1  = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_X),
+	AXIS_Y_GPIO0  = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_Y),
+	AXIS_Y_GPIO1  = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_Y),
+	AXIS_Z_GPIO0  = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_Z),
+	AXIS_Z_GPIO1  = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_Z),
+
+	AXIS_RX_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_RX),
+	AXIS_RX_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_RX),
+	AXIS_RY_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_RY),
+	AXIS_RY_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_RY),
+	AXIS_RZ_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_RZ),
+	AXIS_RZ_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_RZ),
+
+	AXIS_VX_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_VX),
+	AXIS_VX_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_VX),
+	AXIS_VY_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_VY),
+	AXIS_VY_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_VY),
+	AXIS_VZ_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_AXIS_VZ),
+	AXIS_VZ_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_AXIS_VZ),
+
+	THROTTLE_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_THROTTLE),
+	THROTTLE_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_THROTTLE),
+
+	RUDDER_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_RUDDER),
+	RUDDER_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_RUDDER),
+
+	POVHAT_GPIO0 = JOYSTICK_GET_PIN0(JOYSTICK_POVHAT),
+	POVHAT_GPIO1 = JOYSTICK_GET_PIN1(JOYSTICK_POVHAT)
+
+};
+
+
+
+u16 joystick_state[JOYSTICK_STATE_MAX];
+
+
+static void initaxis(i8 gpio0, i8 gpio1);
+static u16  debounce(i8 gpio, u16 mask);
+static u16  digitize(i8 gpio_min, i8 gpio_max);
+
+
+
+void joystick_init()
+{
+
+	i8 n;
+
+	for (n=0; n < JOYSTICK_STATE_MAX; n++)
+		joystick_state[n] = 0;
+
+	if (JOYSTICK_NUM_AAXES > 0)
+		adc_mode(ADC_ENABLE | ADC_FORMAT_LJUST | ADC_TACQ_4CY | ADC_CLK_FOSC_16);
+
+	if (BUTTON0_GPIO  >= 0) gpio_set_input(BUTTON0_GPIO,  true);
+	if (BUTTON1_GPIO  >= 0) gpio_set_input(BUTTON1_GPIO,  true);
+	if (BUTTON2_GPIO  >= 0) gpio_set_input(BUTTON2_GPIO,  true);
+	if (BUTTON3_GPIO  >= 0) gpio_set_input(BUTTON3_GPIO,  true);
+	if (BUTTON4_GPIO  >= 0) gpio_set_input(BUTTON4_GPIO,  true);
+	if (BUTTON5_GPIO  >= 0) gpio_set_input(BUTTON5_GPIO,  true);
+	if (BUTTON6_GPIO  >= 0) gpio_set_input(BUTTON6_GPIO,  true);
+	if (BUTTON7_GPIO  >= 0) gpio_set_input(BUTTON7_GPIO,  true);
+	if (BUTTON8_GPIO  >= 0) gpio_set_input(BUTTON8_GPIO,  true);
+	if (BUTTON9_GPIO  >= 0) gpio_set_input(BUTTON9_GPIO,  true);
+	if (BUTTON10_GPIO >= 0) gpio_set_input(BUTTON10_GPIO, true);
+	if (BUTTON11_GPIO >= 0) gpio_set_input(BUTTON11_GPIO, true);
+	if (BUTTON12_GPIO >= 0) gpio_set_input(BUTTON12_GPIO, true);
+	if (BUTTON13_GPIO >= 0) gpio_set_input(BUTTON13_GPIO, true);
+	if (BUTTON14_GPIO >= 0) gpio_set_input(BUTTON14_GPIO, true);
+	if (BUTTON15_GPIO >= 0) gpio_set_input(BUTTON15_GPIO, true);
+
+	if (AXIS_X_GPIO0 >= 0) initaxis(AXIS_X_GPIO0, AXIS_X_GPIO1);
+	if (AXIS_Y_GPIO0 >= 0) initaxis(AXIS_Y_GPIO0, AXIS_Y_GPIO1);
+	if (AXIS_Z_GPIO0 >= 0) initaxis(AXIS_Z_GPIO0, AXIS_Z_GPIO1);
+
+	if (AXIS_RX_GPIO0 >= 0) initaxis(AXIS_RX_GPIO0, AXIS_RX_GPIO1);
+	if (AXIS_RY_GPIO0 >= 0) initaxis(AXIS_RY_GPIO0, AXIS_RY_GPIO1);
+	if (AXIS_RZ_GPIO0 >= 0) initaxis(AXIS_RZ_GPIO0, AXIS_RZ_GPIO1);
+
+	if (AXIS_VX_GPIO0 >= 0) initaxis(AXIS_VX_GPIO0, AXIS_VX_GPIO1);
+	if (AXIS_VY_GPIO0 >= 0) initaxis(AXIS_VY_GPIO0, AXIS_VY_GPIO1);
+	if (AXIS_VZ_GPIO0 >= 0) initaxis(AXIS_VZ_GPIO0, AXIS_VZ_GPIO1);
+
+	if (THROTTLE_GPIO0 >= 0) initaxis(THROTTLE_GPIO0, THROTTLE_GPIO1);
+	if (RUDDER_GPIO0   >= 0) initaxis(RUDDER_GPIO0,   RUDDER_GPIO1);
+	if (POVHAT_GPIO0   >= 0) initaxis(POVHAT_GPIO0,   POVHAT_GPIO1);
+
+	gpio_port_set_pullups(GPIO_PORTB, true);
+	gpio_port_set_pullups(GPIO_PORTD, true);
+
+}
+
+
+
+void joystick_update()
+{
+
+	u16 buttons = 0;
+
+	if (BUTTON0_GPIO >= 0)  buttons |= debounce(BUTTON0_GPIO,  1 << 0);
+	if (BUTTON1_GPIO >= 0)  buttons |= debounce(BUTTON1_GPIO,  1 << 1);
+	if (BUTTON2_GPIO >= 0)  buttons |= debounce(BUTTON2_GPIO,  1 << 2);
+	if (BUTTON3_GPIO >= 0)  buttons |= debounce(BUTTON3_GPIO,  1 << 3);
+	if (BUTTON4_GPIO >= 0)  buttons |= debounce(BUTTON4_GPIO,  1 << 4);
+	if (BUTTON5_GPIO >= 0)  buttons |= debounce(BUTTON5_GPIO,  1 << 5);
+	if (BUTTON6_GPIO >= 0)  buttons |= debounce(BUTTON6_GPIO,  1 << 6);
+	if (BUTTON7_GPIO >= 0)  buttons |= debounce(BUTTON7_GPIO,  1 << 7);
+	if (BUTTON8_GPIO >= 0)  buttons |= debounce(BUTTON8_GPIO,  1 << 8);
+	if (BUTTON9_GPIO >= 0)  buttons |= debounce(BUTTON9_GPIO,  1 << 9);
+	if (BUTTON10_GPIO >= 0) buttons |= debounce(BUTTON10_GPIO, 1 << 10);
+	if (BUTTON11_GPIO >= 0) buttons |= debounce(BUTTON11_GPIO, 1 << 11);
+	if (BUTTON12_GPIO >= 0) buttons |= debounce(BUTTON12_GPIO, 1 << 12);
+	if (BUTTON13_GPIO >= 0) buttons |= debounce(BUTTON13_GPIO, 1 << 13);
+	if (BUTTON14_GPIO >= 0) buttons |= debounce(BUTTON14_GPIO, 1 << 14);
+	if (BUTTON15_GPIO >= 0) buttons |= debounce(BUTTON15_GPIO, 1 << 15);
+
+	joystick_state[JOYSTICK_STATE_BUTTONS] = buttons;
+
+
+	if (JOYSTICK_STATE_AXIS_X >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_X] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_X)? adc_read(AXIS_X_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_X)? digitize(AXIS_X_GPIO0, AXIS_X_GPIO1): 0;
+
+	if (JOYSTICK_STATE_AXIS_Y >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_Y] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_Y)? adc_read(AXIS_Y_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_Y)? digitize(AXIS_Y_GPIO0, AXIS_Y_GPIO1): 0;
+
+	if (JOYSTICK_STATE_AXIS_Z >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_Z] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_Z)? adc_read(AXIS_Z_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_Z)? digitize(AXIS_Z_GPIO0, AXIS_Z_GPIO1): 0;
+
+	if (JOYSTICK_STATE_AXIS_RX >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_RX] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_RX)? adc_read(AXIS_RX_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_RX)? digitize(AXIS_RX_GPIO0, AXIS_RX_GPIO1): 0;
+
+	if (JOYSTICK_STATE_AXIS_RY >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_RY] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_RY)? adc_read(AXIS_RY_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_RY)? digitize(AXIS_RY_GPIO0, AXIS_RY_GPIO1): 0;
+
+	if (JOYSTICK_STATE_AXIS_RZ >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_RZ] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_RZ)? adc_read(AXIS_RZ_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_RZ)? digitize(AXIS_RZ_GPIO0, AXIS_RZ_GPIO1): 0;
+
+	if (JOYSTICK_STATE_AXIS_VX >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_VX] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_X)? adc_read(AXIS_VX_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_X)? digitize(AXIS_VX_GPIO0, AXIS_VX_GPIO1): 0;
+
+	if (JOYSTICK_STATE_AXIS_VY >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_VY] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_Y)? adc_read(AXIS_VY_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_Y)? digitize(AXIS_VY_GPIO0, AXIS_VY_GPIO1): 0;
+
+	if (JOYSTICK_STATE_AXIS_VZ >= 0)
+		joystick_state[JOYSTICK_STATE_AXIS_VZ] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_AXIS_Z)? adc_read(AXIS_VZ_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_AXIS_Z)? digitize(AXIS_VZ_GPIO0, AXIS_VZ_GPIO1): 0;
+
+	if (JOYSTICK_STATE_THROTTLE >= 0)
+		joystick_state[JOYSTICK_STATE_THROTTLE] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_THROTTLE)? adc_read(THROTTLE_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_THROTTLE)? digitize(THROTTLE_GPIO0, THROTTLE_GPIO1): 0;
+
+	if (JOYSTICK_STATE_RUDDER >= 0)
+		joystick_state[JOYSTICK_STATE_RUDDER] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_RUDDER)? adc_read(RUDDER_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_RUDDER)? digitize(RUDDER_GPIO0, RUDDER_GPIO1): 0;
+
+	if (JOYSTICK_STATE_POVHAT >= 0)
+		joystick_state[JOYSTICK_STATE_POVHAT] =
+			JOYSTICK_IS_ANALOG( JOYSTICK_POVHAT)? adc_read(POVHAT_GPIO0):
+			JOYSTICK_IS_DIGITAL(JOYSTICK_POVHAT)? digitize(POVHAT_GPIO0, POVHAT_GPIO1): 0;
+
+}
+
+
+
+void initaxis(i8 gpio0, i8 gpio1)
+{
+
+	if (gpio1 >= 0) {  // Axis is digital
+
+		gpio_set_input(gpio0, true);
+		gpio_set_input(gpio1, true);
+
+
+	} else
+		adc_set_analog(gpio0, true);
+
+}
+
+
+
+u16 debounce(i8 gpio, u16 mask)
+{
+
+	u8 count = 0;
+	u8 n;
+
+	for (n=0; n < DIGITIZE_DEBOUNCE_SAMPLES; n++) {
+
+		if (!gpio_read(gpio))
+			count++;
+
+		if (count > DIGITIZE_DEBOUNCE_THRESHOLD)
+			return mask;
+
+	}
+
+	return 0;
+
+}
+
+
+
+u16 digitize(i8 gpio_min, i8 gpio_max)
+{
+
+	u8 axis_min = 0;
+	u8 axis_max = 0;
+	u8 n;
+
+	for (n=0; n < DIGITIZE_SMOOTH_SAMPLES; n++) {
+
+		if (!gpio_read(gpio_min)) axis_min++;
+		if (!gpio_read(gpio_max)) axis_max++;
+
+		if (axis_min > DIGITIZE_SMOOTH_THRESHOLD)
+			return DIGITIZE_LEFT;
+
+		if (axis_max > DIGITIZE_SMOOTH_THRESHOLD)
+			return DIGITIZE_RIGHT;
+
+	}
+
+	return DIGITIZE_CENTER;
+
+}
+
+
