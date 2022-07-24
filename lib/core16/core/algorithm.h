@@ -372,7 +372,7 @@
 
 
 /**
- * Generate the definitions (structs and prototypes) for
+ *   Generate the definitions (structs and prototypes) for
  * an implementation of a circular (ring) buffer.
  *
  **/
@@ -407,7 +407,7 @@
 
 
 /**
- * Generate the external prototypes for the ring buffer.
+ *  Generate the external prototypes for the ring buffer.
  *
  **/
 #define GENERATE_RINGBUF_EXT(ringbuf)                                                    \
@@ -419,7 +419,7 @@
 
 
 /**
- * Generate the implementation of the ring buffer's basic functions.
+ *  Generate the implementation of the ring buffer's basic functions.
  *
  **/
 #define GENERATE_RINGBUF_SRC(ringbuf)                                                         \
@@ -464,7 +464,7 @@
 
 
 /**
- * Generate the prototypes and implementation of the ring buffer.
+ *  Generate the prototypes and implementation of the ring buffer.
  *
  **/
 #define GENERATE_RINGBUF(ringbuf, datatype, capacity) \
@@ -484,7 +484,7 @@
 
 
 /**
- * Expand and concatenate the parameters
+ *  Expand and concatenate the parameters
  *
  **/
 #define PP_CONCAT_II(x, y)  x##y
@@ -525,8 +525,8 @@
 
 
 /**
- *  Generate an overloaded call to X, by appending the number
- *  of arguments to the name.
+ *   Generate an overloaded call to X, by appending the number
+ * of arguments to the name.
  *
  **/
 #define PP_OVERLOAD(X, ...) PP_CONCAT(X, PP_NARG(__VA_ARGS__))
@@ -641,6 +641,137 @@
 #define PP_FOREACH(X, ...)  PP_OVERLOAD(PP_FOREACH_I_, __VA_ARGS__)(X, __VA_ARGS__)
 
 
+/**
+ *  Apply X to the arguments recursively N times
+ *
+ **/
+#define PP_REDUCE_I_0(X, ...)  __VA_ARGS__
+#define PP_REDUCE_I_1(X, ...)  PP_REDUCE_I_0(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_2(X, ...)  PP_REDUCE_I_1(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_3(X, ...)  PP_REDUCE_I_2(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_4(X, ...)  PP_REDUCE_I_3(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_5(X, ...)  PP_REDUCE_I_4(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_6(X, ...)  PP_REDUCE_I_5(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_7(X, ...)  PP_REDUCE_I_6(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_8(X, ...)  PP_REDUCE_I_7(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_9(X, ...)  PP_REDUCE_I_8(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_10(X, ...)  PP_REDUCE_I_9(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_11(X, ...)  PP_REDUCE_I_10(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_12(X, ...)  PP_REDUCE_I_11(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_13(X, ...)  PP_REDUCE_I_12(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_14(X, ...)  PP_REDUCE_I_13(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_15(X, ...)  PP_REDUCE_I_14(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_16(X, ...)  PP_REDUCE_I_15(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_17(X, ...)  PP_REDUCE_I_16(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_18(X, ...)  PP_REDUCE_I_17(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_19(X, ...)  PP_REDUCE_I_18(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_20(X, ...)  PP_REDUCE_I_19(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_21(X, ...)  PP_REDUCE_I_20(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_22(X, ...)  PP_REDUCE_I_21(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_23(X, ...)  PP_REDUCE_I_22(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_24(X, ...)  PP_REDUCE_I_23(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_25(X, ...)  PP_REDUCE_I_24(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_26(X, ...)  PP_REDUCE_I_25(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_27(X, ...)  PP_REDUCE_I_26(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_28(X, ...)  PP_REDUCE_I_27(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_29(X, ...)  PP_REDUCE_I_28(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_30(X, ...)  PP_REDUCE_I_29(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_31(X, ...)  PP_REDUCE_I_30(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_32(X, ...)  PP_REDUCE_I_31(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_33(X, ...)  PP_REDUCE_I_32(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_34(X, ...)  PP_REDUCE_I_33(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_35(X, ...)  PP_REDUCE_I_34(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_36(X, ...)  PP_REDUCE_I_35(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_37(X, ...)  PP_REDUCE_I_36(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_38(X, ...)  PP_REDUCE_I_37(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_39(X, ...)  PP_REDUCE_I_38(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_40(X, ...)  PP_REDUCE_I_39(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_41(X, ...)  PP_REDUCE_I_40(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_42(X, ...)  PP_REDUCE_I_41(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_43(X, ...)  PP_REDUCE_I_42(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_44(X, ...)  PP_REDUCE_I_43(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_45(X, ...)  PP_REDUCE_I_44(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_46(X, ...)  PP_REDUCE_I_45(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_47(X, ...)  PP_REDUCE_I_46(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_48(X, ...)  PP_REDUCE_I_47(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_49(X, ...)  PP_REDUCE_I_48(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_50(X, ...)  PP_REDUCE_I_49(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_51(X, ...)  PP_REDUCE_I_50(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_52(X, ...)  PP_REDUCE_I_51(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_53(X, ...)  PP_REDUCE_I_52(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_54(X, ...)  PP_REDUCE_I_53(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_55(X, ...)  PP_REDUCE_I_54(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_56(X, ...)  PP_REDUCE_I_55(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_57(X, ...)  PP_REDUCE_I_56(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_58(X, ...)  PP_REDUCE_I_57(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_59(X, ...)  PP_REDUCE_I_58(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_60(X, ...)  PP_REDUCE_I_59(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_61(X, ...)  PP_REDUCE_I_60(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_62(X, ...)  PP_REDUCE_I_61(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_63(X, ...)  PP_REDUCE_I_62(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_64(X, ...)  PP_REDUCE_I_63(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_65(X, ...)  PP_REDUCE_I_64(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_66(X, ...)  PP_REDUCE_I_65(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_67(X, ...)  PP_REDUCE_I_66(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_68(X, ...)  PP_REDUCE_I_67(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_69(X, ...)  PP_REDUCE_I_68(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_70(X, ...)  PP_REDUCE_I_69(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_71(X, ...)  PP_REDUCE_I_70(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_72(X, ...)  PP_REDUCE_I_71(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_73(X, ...)  PP_REDUCE_I_72(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_74(X, ...)  PP_REDUCE_I_73(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_75(X, ...)  PP_REDUCE_I_74(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_76(X, ...)  PP_REDUCE_I_75(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_77(X, ...)  PP_REDUCE_I_76(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_78(X, ...)  PP_REDUCE_I_77(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_79(X, ...)  PP_REDUCE_I_78(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_80(X, ...)  PP_REDUCE_I_79(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_81(X, ...)  PP_REDUCE_I_80(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_82(X, ...)  PP_REDUCE_I_81(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_83(X, ...)  PP_REDUCE_I_82(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_84(X, ...)  PP_REDUCE_I_83(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_85(X, ...)  PP_REDUCE_I_84(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_86(X, ...)  PP_REDUCE_I_85(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_87(X, ...)  PP_REDUCE_I_86(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_88(X, ...)  PP_REDUCE_I_87(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_89(X, ...)  PP_REDUCE_I_88(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_90(X, ...)  PP_REDUCE_I_89(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_91(X, ...)  PP_REDUCE_I_90(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_92(X, ...)  PP_REDUCE_I_91(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_93(X, ...)  PP_REDUCE_I_92(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_94(X, ...)  PP_REDUCE_I_93(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_95(X, ...)  PP_REDUCE_I_94(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_96(X, ...)  PP_REDUCE_I_95(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_97(X, ...)  PP_REDUCE_I_96(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_98(X, ...)  PP_REDUCE_I_97(X, X(__VA_ARGS__))
+#define PP_REDUCE_I_99(X, ...)  PP_REDUCE_I_98(X, X(__VA_ARGS__))
+
+#define PP_REDUCE(X, n, ...) PP_CONCAT(PP_REDUCE_I_, n)(X, __VA_ARGS__)
+
+
+
+/**
+ *  Return the first argument of the list
+ *
+ *
+ **/
+#define PP_POP(x, ...)  x
+
+
+
+/**
+ *  Drop the first argument of the list, return the rest
+ *
+ **/
+#define PP_SHIFT(x, ...)  __VA_ARGS__
+
+
+
+/**
+ *  Force the argument list to expand, then apply X to it
+ *
+ **/
+#define PP_EVAL(X, ...)  X(__VA_ARGS__)
+
 
 #endif
-
