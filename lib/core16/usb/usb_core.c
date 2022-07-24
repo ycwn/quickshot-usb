@@ -48,13 +48,6 @@ void usb_mode(byte mode)
 	if ((mode & USB_ENABLE) == 0)
 		return;
 
-	if (mode & USB_INTERRUPT) {
-
-		IPR2bits.USBIP = 1;
-		PIE2bits.USBIE = 1;
-
-	}
-
 	UIE  = 0x7f;
 	UEIE = 0x9f;
 
@@ -62,6 +55,13 @@ void usb_mode(byte mode)
 	if ((mode & USB_SPEED_FULL) != 0) UCFGbits.FSEN  = 1;
 
 	UCONbits.USBEN = 1;
+
+	if (mode & USB_INTERRUPT) {
+
+		IPR2bits.USBIP = 1;
+		PIE2bits.USBIE = 1;
+
+	}
 
 	while (UCONbits.SE0);
 
