@@ -5,6 +5,7 @@
 
 
 #include <stddef.h>
+#include <stdint.h>
 #include <pic18fregs.h>
 
 
@@ -84,6 +85,31 @@ enum {
 };
 
 
+typedef uint8_t bool;
+
+enum {
+
+	false = 0,
+	true  = !false
+
+};
+
+
+typedef unsigned int uint;
+
+typedef uint8_t  byte;
+typedef uint16_t word;
+typedef uint32_t dword;
+
+typedef int8_t  i8;
+typedef int16_t i16;
+typedef int32_t i32;
+
+typedef uint8_t  u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+
+
 #define BYTE( x, n)  (((x) >> (8  * (n))) & 255)
 #define WORD( x, n)  (((x) >> (16 * (n))) & 65535)
 #define DWORD(x, n)  (((x) >> (32 * (n))) & 4294967295)
@@ -92,21 +118,8 @@ enum {
 #define DWORD2(a, b)        ((a) | ((b) << 16))
 #define DWORD4(a, b, c, d)  ((a) | ((b) <<  8) | ((c) << 16) | ((d) << 24))
 
-static char mini8( char a, char b) { return (a < b)? a: b; }
-static int  mini16(int  a, int  b) { return (a < b)? a: b; }
-static long mini32(long a, long b) { return (a < b)? a: b; }
-
-static byte  minu8( byte  a, byte  b) { return (a < b)? a: b; }
-static word  minu16(word  a, word  b) { return (a < b)? a: b; }
-static dword minu32(dword a, dword b) { return (a < b)? a: b; }
-
-static char maxi8( char a, char b) { return (a > b)? a: b; }
-static int  maxi16(int  a, int  b) { return (a > b)? a: b; }
-static long maxi32(long a, long b) { return (a > b)? a: b; }
-
-static byte  maxu8( byte  a, byte  b) { return (a > b)? a: b; }
-static word  maxu16(word  a, word  b) { return (a > b)? a: b; }
-static dword maxu32(dword a, dword b) { return (a > b)? a: b; }
+#define MIN(a, b)  (((a) < (b))? (a): (b))
+#define MAX(a, b)  (((a) > (b))? (a): (b))
 
 
 void usleep(byte usec);

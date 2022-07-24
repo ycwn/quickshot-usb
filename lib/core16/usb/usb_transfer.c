@@ -386,7 +386,7 @@ void transfer_ack()
 void transfer_prefetch()
 {
 
-	const word size = minu16(curr_xf->length, curr_xf->capacity);
+	const word size = MIN(curr_xf->length, curr_xf->capacity);
 
 	if (curr_xf->status == TRANSFER_CODE) {
 
