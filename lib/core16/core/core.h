@@ -1,7 +1,7 @@
 
 
-#ifndef __CORE_H
-#define __CORE_H
+#ifndef CORE_CORE_H
+#define CORE_CORE_H
 
 
 #include <stddef.h>
@@ -74,9 +74,15 @@
 #define VECTOR_VOLTAGE_DETECT      0xfa1, 2
 
 
-typedef unsigned char  byte;
-typedef unsigned short word;
-typedef unsigned long  dword;
+typedef void (*isr_callback_t)();
+
+enum {
+
+	ISR_LOW  = 0,
+	ISR_HIGH = 1,
+
+};
+
 
 #define BYTE( x, n)  (((x) >> (8  * (n))) & 255)
 #define WORD( x, n)  (((x) >> (16 * (n))) & 65535)
@@ -106,6 +112,8 @@ static dword maxu32(dword a, dword b) { return (a > b)? a: b; }
 void usleep(byte usec);
 void msleep(byte msec);
 void sleep(byte sec);
+
+isr_callback_t isr_attach(i8 priority, isr_callback_t isrcb);
 
 
 #endif
