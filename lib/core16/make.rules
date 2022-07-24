@@ -13,6 +13,10 @@ core     =
 core_no  =
 core_yes =
 
+
+default: all
+
+
 include $(core_dir)/device/tool-$(toolchain).rules
 include $(core_dir)/device/chip-$(device).rules
 include $(rules)
@@ -26,9 +30,11 @@ cflags  += $(config)
 ldflags +=
 asflags += $(config)
 
+
 core_src := $(sort $(core) $(core_yes))
 auto_src := $(patsubst %.in, $(build)/auto/%, $(filter %.in, $(core)))
 app_src  := $(shell find $(source) -name '*.c' -o -name '*.asm')
+
 
 core_obj :=\
 	$(patsubst %.c,   $(build)/core/%.o, $(filter %.c,   $(core_src))) \
@@ -46,6 +52,7 @@ app_obj :=\
 
 .PHONY: all clean tarball autogen upload $(build)
 .SUFFIXES:
+
 
 
 all: $(build) autogen $(build)/$(project).hex
